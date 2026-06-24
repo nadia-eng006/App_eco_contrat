@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoContrat - Automatisation de Contrats CDI & CDD</title>
+    <meta name="description" content="Générez, personnalisez et téléchargez vos contrats de travail CDI et CDD instantanément avec EcoContrat. Une plateforme rapide et sécurisée.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css?v=3">
+    <!-- html2pdf.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <!-- Background Animated Gradients -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-container">
+                    <img src="logo.png?v=3" alt="ECO Transfo Logo" class="logo-img">
+                </div>
+                
+            </div>
+            <div class="theme-toggle-wrapper">
+                <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle Theme">
+                    <i class="fa-solid fa-moon theme-icon-dark"></i>
+                    <i class="fa-solid fa-sun theme-icon-light" style="display: none;"></i>
+                </button>
+            </div>
+            <div id="user-profile" class="user-profile" style="display: none;">
+                <span class="user-badge"><i class="fa-solid fa-circle-user"></i> <span id="username-display">Admin</span></span>
+                <button id="logout-btn" class="logout-btn">
+                    <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+
+        <!-- SECTION 1: LOGIN VIEW -->
+        <section id="login-view" class="view-section active-view">
+            <div class="glass-card login-card">
+                <div class="card-header">
+                    
+                    <h2>Ravi de vous revoir</h2>
+                    <p class="subtitle">Connectez-vous pour commencer à automatiser vos contrats</p>
+                </div>
+                <form id="login-form" novalidate>
+                    <div class="input-group">
+                        <label for="login-username"><i class="fa-regular fa-envelope"></i> Identifiant</label>
+                        <input type="text" id="login-username" placeholder="Entrez votre identifiant" required autocomplete="username">
+                        <span class="error-msg" id="username-error">Veuillez entrer votre identifiant</span>
+                    </div>
+                    <div class="input-group">
+                        <label for="login-password"><i class="fa-solid fa-lock"></i> Mot de passe</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="login-password" placeholder="Entrez votre mot de passe" required autocomplete="current-password">
+                            <button type="button" id="toggle-password" class="password-toggle-icon" aria-label="Afficher le mot de passe">
+                                <i class="fa-regular fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="error-msg" id="password-error">Veuillez entrer votre mot de passe</span>
+                    </div>
+                    <div class="form-feedback error-box" id="login-feedback" style="display: none;">
+                        <i class="fa-solid fa-circle-exclamation"></i> Identifiants incorrects. Veuillez réessayer (admin / admin123).
+                    </div>
+                    <button type="submit" id="login-submit-btn" class="btn btn-primary btn-block">
+                        Se connecter <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- SECTION 2: CONTRACT FORM VIEW -->
+        <section id="form-view" class="view-section">
+            <div class="glass-card form-card">
+                <div class="card-header-with-badge">
+                    <div>
+                        <h2>Rédaction du Contrat</h2>
+                        <p class="subtitle">Remplissez les détails du collaborateur pour générer le contrat de travail</p>
+                    </div>
+                    <span class="step-badge">Étape 1 sur 2</span>
+                </div>
+                <form id="contract-form" novalidate>
+                    <div class="form-grid">
+                        <!-- Civil Status -->
+                        <div class="input-group">
+                            <label for="employee-lastname">Nom</label>
+                            <input type="text" id="employee-lastname" placeholder="Ex: El hassouni" required>
+                            <span class="error-msg">Ce champ est requis.</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="employee-firstname">Prénom</label>
+                            <input type="text" id="employee-firstname" placeholder="Ex: Amine" required>
+                            <span class="error-msg">Ce champ est requis.</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="employee-birthdate">Date de naissance</label>
+                            <input type="date" id="employee-birthdate" required>
+                            <span class="error-msg">Veuillez entrer une date valide.</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="employee-cin">N° CIN / Pièce d'identité</label>
+                            <input type="text" id="employee-cin" placeholder="Ex: AB123456" required>
+                            <span class="error-msg">Ce champ est requis.</span>
+                        </div>
+                        <div class="input-group full-width">
+                            <label for="employee-address">Adresse de résidence</label>
+                            <input type="text" id="employee-address" placeholder="Ex: 15 Boulevard d'Anfa, Casablanca" required>
+                            <span class="error-msg">Ce champ est requis.</span>
+                        </div>
+
+                        <!-- Contract Specifics -->
+                        <div class="input-group">
+                            <label for="contract-type">Type de contrat</label>
+                            <select id="contract-type" required>
+                                <option value="" disabled selected>Choisir un type...</option>
+                                <option value="cdi">CDI (Durée Indéterminée)</option>
+                                <option value="cdd">CDD (Durée Déterminée - 3 mois)</option>
+                            </select>
+                            <span class="error-msg">Veuillez sélectionner un type de contrat.</span>
+                        </div>
+                        <div class="input-group">
+                            <label for="hire-date">Date d'embauche</label>
+                            <input type="date" id="hire-date" required>
+                            <span class="error-msg">Veuillez entrer une date valide.</span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic CDI fields (Poste and Salaire) -->
+                    <div id="cdi-fields-container" class="dynamic-fields-container">
+                        <div class="form-grid pt-0">
+                            <div class="input-group">
+                                <label for="employee-position">Poste / Fonction</label>
+                                <input type="text" id="employee-position" placeholder="Ex: Développeur Full Stack Web">
+                                <span class="error-msg">Veuillez spécifier le poste.</span>
+                            </div>
+                            <div class="input-group">
+                                <label for="employee-salary">Salaire mensuel net (DH)</label>
+                                <div class="salary-input-wrapper">
+                                    <input type="number" id="employee-salary" placeholder="Ex: 15000" min="0">
+                                    <span class="currency-symbol">DH</span>
+                                </div>
+                                <span class="error-msg">Veuillez entrer un salaire valide.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="generate-btn" class="btn btn-primary">
+                            Rédiger le contrat <i class="fa-solid fa-file-pen"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CONTRACT PREVIEW & DOWNLOAD VIEW -->
+        <section id="contract-preview-view" class="view-section">
+            <div class="preview-layout">
+                <!-- Left Sidebar Details -->
+                <aside class="preview-sidebar">
+                    <div class="glass-card sidebar-card">
+                        <h3>Détails du document</h3>
+                        <ul class="document-summary-list">
+                            <li>
+                                <span class="label">Collaborateur :</span>
+                                <span class="value" id="summary-fullname">-</span>
+                            </li>
+                            <li>
+                                <span class="label">Contrat :</span>
+                                <span class="value badge-value" id="summary-type">-</span>
+                            </li>
+                            <li>
+                                <span class="label">Date d'effet :</span>
+                                <span class="value" id="summary-date">-</span>
+                            </li>
+                        </ul>
+                        <div class="sidebar-tips">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <p>Le document généré respecte les normes et la législation du droit du travail marocain.</p>
+                        </div>
+                        <div class="sidebar-actions">
+                            <button id="back-to-form-btn" class="btn btn-secondary btn-block">
+                                <i class="fa-solid fa-arrow-left"></i> Modifier les infos
+                            </button>
+                            <button id="download-pdf-btn" class="btn btn-success btn-block">
+                                <i class="fa-solid fa-file-pdf"></i> Télécharger le PDF
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Right Live Preview Paper -->
+                <div class="contract-paper-container">
+                    <div id="contract-paper-content" class="contract-paper">
+                        <!-- Content will be injected dynamically by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Success Toast Notification -->
+    <div id="toast-notification" class="toast">
+        <div class="toast-content">
+            <i class="fa-solid fa-circle-check toast-icon"></i>
+            <div class="toast-message">
+                <span class="toast-title">Succès</span>
+                <span class="toast-desc">Le PDF a été généré avec succès !</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js?v=3"></script>
+</body>
+</html>
