@@ -1,0 +1,396 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+.app{min-height:600px;background:var(--color-background-tertiary);padding:2rem 1rem}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:2rem;max-width:520px;margin:0 auto}
+.card-wide{max-width:740px}
+.logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:2rem}
+.logo-icon{width:40px;height:40px;background:#185FA5;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px}
+.logo-text{font-size:20px;font-weight:500;color:var(--color-text-primary)}
+.logo-sub{font-size:12px;color:var(--color-text-secondary)}
+h2{font-size:18px;font-weight:500;margin-bottom:0.25rem}
+.subtitle{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.5rem}
+.field{margin-bottom:1rem}
+label{display:block;font-size:13px;color:var(--color-text-secondary);margin-bottom:4px}
+input,select{width:100%;padding:8px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:14px;background:var(--color-background-primary);color:var(--color-text-primary)}
+input:focus,select:focus{outline:none;box-shadow:0 0 0 2px #185FA530}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:14px;cursor:pointer;background:transparent;color:var(--color-text-primary);transition:background 0.15s}
+.btn:hover{background:var(--color-background-secondary)}
+.btn-primary{background:#185FA5;color:#fff;border-color:#185FA5}
+.btn-primary:hover{background:#0C447C;border-color:#0C447C}
+.btn-success{background:#0F6E56;color:#fff;border-color:#0F6E56}
+.btn-success:hover{background:#085041;border-color:#085041}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem}
+.error{font-size:12px;color:var(--color-text-danger);margin-top:8px;display:none}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.badge-cdi{background:#E6F1FB;color:#0C447C}
+.badge-cdd{background:#FAEEDA;color:#633806}
+.divider{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1.25rem 0}
+.contract-section{margin-bottom:1rem}
+.contract-section h4{font-size:13px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+.contract-body{font-size:14px;line-height:1.8;color:var(--color-text-primary)}
+.contract-body p{margin-bottom:0.75rem}
+.header-bar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem}
+.tag-row{display:flex;gap:8px;align-items:center;margin-bottom:1.5rem}
+.field-cdi{transition:opacity 0.2s}
+.user-badge{display:flex;align-items:center;gap:8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:4px 12px 4px 8px;font-size:13px}
+.avatar{width:24px;height:24px;border-radius:50%;background:#185FA5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;max-width:740px;margin-left:auto;margin-right:auto}
+.contract-header{text-align:center;padding:1.5rem 0 1rem;border-bottom:2px solid #185FA5;margin-bottom:1.5rem}
+.contract-header h1{font-size:20px;font-weight:500;letter-spacing:0.05em;color:#185FA5}
+.contract-header p{font-size:12px;color:var(--color-text-secondary);margin-top:4px}
+.sig-row{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem}
+.sig-box{border-top:0.5px solid var(--color-border-primary);padding-top:8px;font-size:12px;color:var(--color-text-secondary)}
+.article{margin-bottom:1.25rem}
+.article h4{font-size:13px;font-weight:500;margin-bottom:4px}
+.article p{font-size:13px;line-height:1.8;color:var(--color-text-secondary)}
+</style>
+
+<div class="app" id="app">
+
+<div id="page-login">
+  <div class="logo">
+    <div class="logo-icon"><i class="ti ti-file-text" aria-hidden="true"></i></div>
+    <div><div class="logo-text">ContraConnect</div><div class="logo-sub">Gestion automatisée des contrats</div></div>
+  </div>
+  <div class="card">
+    <h2>Connexion</h2>
+    <p class="subtitle">Accédez à votre espace de gestion des contrats</p>
+    <div class="field">
+      <label>Identifiant</label>
+      <input type="text" id="login-user" placeholder="admin" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Mot de passe</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <p class="error" id="login-error">Identifiant ou mot de passe incorrect.</p>
+    <div style="margin-top:1.25rem">
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doLogin()">
+        <i class="ti ti-login" aria-hidden="true"></i> Se connecter
+      </button>
+    </div>
+    <p style="font-size:12px;color:var(--color-text-secondary);text-align:center;margin-top:1rem">Démo : identifiant <strong>admin</strong> / mot de passe <strong>1234</strong></p>
+  </div>
+</div>
+
+<div id="page-form" style="display:none">
+  <div class="topbar">
+    <div class="logo" style="margin:0">
+      <div class="logo-icon" style="width:32px;height:32px;font-size:16px"><i class="ti ti-file-text" aria-hidden="true"></i></div>
+      <span style="font-size:16px;font-weight:500">ContraConnect</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="user-badge"><div class="avatar">AD</div>Admin</div>
+      <button class="btn" onclick="doLogout()" style="font-size:13px"><i class="ti ti-logout" aria-hidden="true"></i> Déconnexion</button>
+    </div>
+  </div>
+  <div class="card card-wide">
+    <h2>Nouveau contrat</h2>
+    <p class="subtitle">Remplissez les informations du salarié pour générer le contrat</p>
+    <hr class="divider">
+    <div class="row">
+      <div class="field"><label>Nom *</label><input type="text" id="f-nom" placeholder="Ex : Alami"></div>
+      <div class="field"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Ex : Youssef"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Date de naissance *</label><input type="date" id="f-ddn"></div>
+      <div class="field"><label>CIN *</label><input type="text" id="f-cin" placeholder="Ex : AB123456"></div>
+    </div>
+    <div class="field"><label>Adresse *</label><input type="text" id="f-adresse" placeholder="Ex : 12 Rue Mohammed V, Casablanca"></div>
+    <div class="field">
+      <label>Type de contrat *</label>
+      <select id="f-type" onchange="toggleContratType()">
+        <option value="">-- Sélectionner --</option>
+        <option value="CDI">CDI – Contrat à Durée Indéterminée</option>
+        <option value="CDD">CDD – Contrat à Durée Déterminée</option>
+      </select>
+    </div>
+    <div id="bloc-cdi" class="field-cdi" style="opacity:0.3;pointer-events:none">
+      <div class="row">
+        <div class="field"><label>Poste *</label><input type="text" id="f-poste" placeholder="Ex : Développeur Full Stack"></div>
+        <div class="field"><label>Salaire mensuel (MAD) *</label><input type="number" id="f-salaire" placeholder="Ex : 8000"></div>
+      </div>
+    </div>
+    <div id="bloc-cdd" style="display:none">
+      <div class="row">
+        <div class="field"><label>Date de début *</label><input type="date" id="f-debut"></div>
+        <div class="field"><label>Date de fin *</label><input type="date" id="f-fin"></div>
+      </div>
+      <div class="field"><label>Motif du CDD *</label><input type="text" id="f-motif" placeholder="Ex : Remplacement, Surcroît d'activité..."></div>
+    </div>
+    <div class="field">
+      <label>Date d'embauche *</label>
+      <input type="date" id="f-embauche">
+    </div>
+    <p class="error" id="form-error">Veuillez remplir tous les champs obligatoires.</p>
+    <div class="actions">
+      <span style="font-size:12px;color:var(--color-text-secondary)">* champs obligatoires</span>
+      <button class="btn btn-primary" onclick="rediger()">
+        <i class="ti ti-file-invoice" aria-hidden="true"></i> Rédiger le contrat ↗
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="page-contrat" style="display:none">
+  <div class="topbar">
+    <div class="logo" style="margin:0">
+      <div class="logo-icon" style="width:32px;height:32px;font-size:16px"><i class="ti ti-file-text" aria-hidden="true"></i></div>
+      <span style="font-size:16px;font-weight:500">ContraConnect</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn" onclick="goForm()" style="font-size:13px"><i class="ti ti-arrow-left" aria-hidden="true"></i> Nouveau contrat</button>
+      <button class="btn" onclick="doLogout()" style="font-size:13px"><i class="ti ti-logout" aria-hidden="true"></i> Déconnexion</button>
+    </div>
+  </div>
+  <div class="card card-wide" id="contrat-content">
+  </div>
+  <div style="max-width:740px;margin:1rem auto;display:flex;justify-content:flex-end;gap:10px">
+    <button class="btn" onclick="goForm()"><i class="ti ti-edit" aria-hidden="true"></i> Modifier</button>
+    <button class="btn btn-success" onclick="dlPDF()"><i class="ti ti-download" aria-hidden="true"></i> Télécharger le PDF</button>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+var data={};
+
+function show(id){
+  ['page-login','page-form','page-contrat'].forEach(function(p){
+    document.getElementById(p).style.display=p===id?'block':'none';
+  });
+}
+
+function doLogin(){
+  var u=document.getElementById('login-user').value.trim();
+  var p=document.getElementById('login-pass').value;
+  var err=document.getElementById('login-error');
+  if(u==='admin'&&p==='1234'){err.style.display='none';show('page-form');}
+  else{err.style.display='block';}
+}
+
+function doLogout(){
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  show('page-login');
+}
+
+function toggleContratType(){
+  var t=document.getElementById('f-type').value;
+  var cdi=document.getElementById('bloc-cdi');
+  var cdd=document.getElementById('bloc-cdd');
+  if(t==='CDI'){
+    cdi.style.opacity='1';cdi.style.pointerEvents='auto';
+    cdd.style.display='none';
+  } else if(t==='CDD'){
+    cdi.style.opacity='0.3';cdi.style.pointerEvents='none';
+    cdd.style.display='block';
+  } else {
+    cdi.style.opacity='0.3';cdi.style.pointerEvents='none';
+    cdd.style.display='none';
+  }
+}
+
+function fmt(d){
+  if(!d)return'';
+  var p=d.split('-');
+  return p[2]+'/'+p[1]+'/'+p[0];
+}
+
+function montantLettre(n){
+  var nombres=['','un','deux','trois','quatre','cinq','six','sept','huit','neuf',
+    'dix','onze','douze','treize','quatorze','quinze','seize','dix-sept','dix-huit','dix-neuf'];
+  var dizaines=['','','vingt','trente','quarante','cinquante','soixante','soixante','quatre-vingts','quatre-vingt'];
+  if(n===0)return'zéro';
+  if(n<20)return nombres[n];
+  if(n<100){var d=Math.floor(n/10),u=n%10;return dizaines[d]+(u?((d===7||d===9)?'-'+nombres[u+10]:'-'+nombres[u]):'');}
+  if(n<1000){var c=Math.floor(n/100),r=n%100;return(c>1?nombres[c]+' ':'')+' cent'+(r?(' '+montantLettre(r)):'s');}
+  if(n<10000){var m=Math.floor(n/1000),r=n%1000;return(m>1?montantLettre(m)+' ':'')+' mille'+(r?(' '+montantLettre(r)):'');}
+  return n.toLocaleString('fr-FR');
+}
+
+function rediger(){
+  var err=document.getElementById('form-error');
+  var nom=document.getElementById('f-nom').value.trim();
+  var prenom=document.getElementById('f-prenom').value.trim();
+  var ddn=document.getElementById('f-ddn').value;
+  var cin=document.getElementById('f-cin').value.trim();
+  var adresse=document.getElementById('f-adresse').value.trim();
+  var type=document.getElementById('f-type').value;
+  var embauche=document.getElementById('f-embauche').value;
+
+  var ok=nom&&prenom&&ddn&&cin&&adresse&&type&&embauche;
+  if(type==='CDI'){
+    var poste=document.getElementById('f-poste').value.trim();
+    var salaire=document.getElementById('f-salaire').value;
+    ok=ok&&poste&&salaire;
+  } else if(type==='CDD'){
+    var debut=document.getElementById('f-debut').value;
+    var fin=document.getElementById('f-fin').value;
+    var motif=document.getElementById('f-motif').value.trim();
+    ok=ok&&debut&&fin&&motif;
+  }
+
+  if(!ok){err.style.display='block';return;}
+  err.style.display='none';
+
+  data={nom:nom,prenom:prenom,ddn:fmt(ddn),cin:cin,adresse:adresse,type:type,embauche:fmt(embauche)};
+  if(type==='CDI'){data.poste=document.getElementById('f-poste').value.trim();data.salaire=parseFloat(document.getElementById('f-salaire').value);}
+  else{data.debut=fmt(document.getElementById('f-debut').value);data.fin=fmt(document.getElementById('f-fin').value);data.motif=document.getElementById('f-motif').value.trim();}
+
+  buildContrat();
+  show('page-contrat');
+}
+
+function goForm(){show('page-form');}
+
+function buildContrat(){
+  var c=document.getElementById('contrat-content');
+  var isCDI=data.type==='CDI';
+  var fullName=data.prenom+' '+data.nom.toUpperCase();
+  var titre=isCDI?'CONTRAT DE TRAVAIL À DURÉE INDÉTERMINÉE':'CONTRAT DE TRAVAIL À DURÉE DÉTERMINÉE';
+  var durée=isCDI?'':('du '+data.debut+' au '+data.fin);
+
+  var html='<div class="contract-header">';
+  html+='<div style="font-size:11px;color:var(--color-text-secondary);letter-spacing:0.1em;margin-bottom:6px">DOCUMENT OFFICIEL</div>';
+  html+='<h1>'+titre+'</h1>';
+  html+='<p>Référence : CTR-'+Date.now().toString().slice(-6)+' &nbsp;|&nbsp; Émis le : '+new Date().toLocaleDateString('fr-FR')+'</p>';
+  html+='</div>';
+
+  html+='<div class="tag-row"><span class="badge '+(isCDI?'badge-cdi':'badge-cdd')+'">'+data.type+'</span>';
+  if(!isCDI) html+='<span style="font-size:13px;color:var(--color-text-secondary)">'+durée+'</span>';
+  html+='</div>';
+
+  html+='<div class="article"><h4>Entre les soussignés</h4>';
+  html+='<p><strong>L\'employeur :</strong> Société ContraConnect SARL, au capital de 100 000 MAD, dont le siège social est situé au Parc Technologique, Casablanca, Maroc, immatriculée au registre de commerce sous le numéro RC-12345, représentée par M. le Directeur Général, ci-après désignée <em>« l\'Employeur »</em>.</p>';
+  html+='<p><strong>Le salarié :</strong> M./Mme. '+fullName+', né(e) le '+data.ddn+', titulaire de la CIN n° '+data.cin.toUpperCase()+', demeurant au '+data.adresse+', ci-après désigné(e) <em>« le Salarié »</em>.</p></div>';
+
+  html+='<hr class="divider">';
+  html+='<div class="article"><h4>Article 1 – Objet du contrat</h4>';
+  if(isCDI){
+    html+='<p>L\'Employeur engage le Salarié en qualité de <strong>'+data.poste+'</strong>, à compter du <strong>'+data.embauche+'</strong>, pour une durée indéterminée, conformément aux dispositions du Code du Travail marocain (Loi n° 65-99).</p>';
+  } else {
+    html+='<p>L\'Employeur engage le Salarié à compter du <strong>'+data.debut+'</strong> jusqu\'au <strong>'+data.fin+'</strong>, dans le cadre d\'un contrat à durée déterminée justifié par : <strong>'+data.motif+'</strong>, conformément aux dispositions du Code du Travail marocain.</p>';
+  }
+  html+='</div>';
+
+  if(isCDI){
+    html+='<div class="article"><h4>Article 2 – Rémunération</h4>';
+    html+='<p>En contrepartie de ses fonctions, le Salarié percevra une rémunération mensuelle brute de <strong>'+data.salaire.toLocaleString('fr-FR')+' MAD</strong>';
+    html+=' ('+montantLettre(data.salaire)+' dirhams), versée à terme échu à la fin de chaque mois.</p></div>';
+
+    html+='<div class="article"><h4>Article 3 – Période d\'essai</h4>';
+    html+='<p>Le présent contrat est soumis à une période d\'essai de <strong>trois (3) mois</strong>, renouvelable une fois pour la même durée, conformément à l\'article 13 du Code du Travail. Durant cette période, chacune des parties peut résilier le contrat sans préavis ni indemnité.</p></div>';
+  } else {
+    html+='<div class="article"><h4>Article 2 – Renouvellement et terme</h4>';
+    html+='<p>Le présent contrat prend fin de plein droit à l\'échéance du terme fixé. Il peut être renouvelé une fois pour une durée n\'excédant pas celle du contrat initial, et ce conformément à l\'article 16 du Code du Travail marocain.</p></div>';
+  }
+
+  html+='<div class="article"><h4>Article '+(isCDI?'4':'3')+' – Durée et horaires de travail</h4>';
+  html+='<p>Le Salarié exercera ses fonctions à temps plein, soit <strong>44 heures par semaine</strong>, conformément aux horaires en vigueur au sein de la Société. Toute heure supplémentaire sera rémunérée conformément aux dispositions légales en vigueur.</p></div>';
+
+  html+='<div class="article"><h4>Article '+(isCDI?'5':'4')+' – Congés annuels</h4>';
+  html+='<p>Le Salarié bénéficiera d\'un congé annuel payé conformément aux dispositions légales, soit un jour et demi (1,5) jour ouvrable par mois de service effectif, à raison de dix-huit (18) jours ouvrables par an.</p></div>';
+
+  html+='<div class="article"><h4>Article '+(isCDI?'6':'5')+' – Obligations du salarié</h4>';
+  html+='<p>Le Salarié s\'engage à :</p>';
+  html+='<p>— Exercer ses fonctions avec diligence et loyauté ;<br>— Respecter le règlement intérieur et les procédures de l\'Entreprise ;<br>— Maintenir la confidentialité des informations auxquelles il a accès dans l\'exercice de ses fonctions ;<br>— Ne pas exercer d\'activité concurrente pendant la durée du présent contrat.</p></div>';
+
+  html+='<div class="article"><h4>Article '+(isCDI?'7':'6')+' – Résiliation</h4>';
+  if(isCDI){
+    html+='<p>Le présent contrat peut être résilié à l\'initiative de l\'une ou l\'autre des parties, sous réserve du respect d\'un préavis dont la durée est fixée conformément aux dispositions légales et aux conventions collectives applicables.</p>';
+  } else {
+    html+='<p>Avant l\'échéance du terme, le présent contrat ne peut être résilié que pour faute grave de l\'une des parties, cas de force majeure, ou accord commun des parties dûment constaté par écrit.</p>';
+  }
+  html+='</div>';
+
+  html+='<div class="article"><h4>Article '+(isCDI?'8':'7')+' – Droit applicable</h4>';
+  html+='<p>Le présent contrat est régi par le Code du Travail marocain (Loi n° 65-99) et ses textes d\'application. Tout litige relatif à son interprétation ou à son exécution sera soumis aux tribunaux compétents du Royaume du Maroc.</p></div>';
+
+  html+='<hr class="divider">';
+  html+='<p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem">Fait à Casablanca, le '+new Date().toLocaleDateString('fr-FR')+', en deux (2) exemplaires originaux, un pour chaque partie.</p>';
+  html+='<div class="sig-row">';
+  html+='<div class="sig-box"><strong>L\'Employeur</strong><br><span>Pour la Société ContraConnect SARL</span><br><br><br><span style="font-style:italic">Signature et cachet</span></div>';
+  html+='<div class="sig-box"><strong>Le Salarié</strong><br><span>'+fullName+'</span><br><br><br><span style="font-style:italic">Signature précédée de la mention<br>« Lu et approuvé »</span></div>';
+  html+='</div>';
+
+  c.innerHTML=html;
+}
+
+function dlPDF(){
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({unit:'mm',format:'a4'});
+  var isCDI=data.type==='CDI';
+  var fullName=data.prenom+' '+data.nom.toUpperCase();
+  var titre=isCDI?'CONTRAT DE TRAVAIL':'CONTRAT DE TRAVAIL';
+  var sous=isCDI?'À DURÉE INDÉTERMINÉE (CDI)':'À DURÉE DÉTERMINÉE (CDD)';
+  var y=20;var lm=20;var rm=190;var W=rm-lm;
+
+  doc.setFillColor(24,95,165);doc.rect(0,0,210,18,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(14);doc.setFont(undefined,'bold');
+  doc.text('ContraConnect',lm,12);
+  doc.setFontSize(9);doc.setFont(undefined,'normal');
+  doc.text('Gestion automatisée des contrats',lm,16);
+
+  y=28;
+  doc.setTextColor(24,95,165);doc.setFontSize(16);doc.setFont(undefined,'bold');
+  doc.text(titre,105,y,{align:'center'});y+=7;
+  doc.text(sous,105,y,{align:'center'});y+=5;
+  doc.setDrawColor(24,95,165);doc.setLineWidth(0.8);doc.line(lm,y,rm,y);y+=6;
+  doc.setFontSize(9);doc.setTextColor(130,130,130);doc.setFont(undefined,'normal');
+  doc.text('Réf : CTR-'+Date.now().toString().slice(-6)+'   |   Émis le : '+new Date().toLocaleDateString('fr-FR'),105,y,{align:'center'});y+=10;
+
+  function section(title,body){
+    if(y>260){doc.addPage();y=20;}
+    doc.setFontSize(10);doc.setFont(undefined,'bold');doc.setTextColor(24,95,165);
+    doc.text(title,lm,y);y+=5;
+    doc.setFont(undefined,'normal');doc.setTextColor(40,40,40);doc.setFontSize(9.5);
+    var lines=doc.splitTextToSize(body,W);
+    lines.forEach(function(l){if(y>265){doc.addPage();y=20;}doc.text(l,lm,y);y+=5;});
+    y+=2;
+  }
+
+  section('ENTRE LES SOUSSIGNÉS',
+    "L'Employeur : Société ContraConnect SARL, siège social au Parc Technologique, Casablanca.\n"+
+    "Le Salarié : "+fullName+", né(e) le "+data.ddn+", CIN n° "+data.cin.toUpperCase()+", demeurant au "+data.adresse+".");
+
+  if(isCDI){
+    section('Art. 1 – Objet','Le Salarié est engagé en qualité de '+data.poste+', à compter du '+data.embauche+', pour une durée indéterminée.');
+    section('Art. 2 – Rémunération','Rémunération mensuelle brute : '+data.salaire.toLocaleString('fr-FR')+' MAD ('+montantLettre(data.salaire)+' dirhams).');
+    section('Art. 3 – Période d\'essai','Trois (3) mois renouvelables une fois, résiliable sans préavis ni indemnité.');
+    section('Art. 4 – Horaires','44 heures hebdomadaires. Heures supplémentaires rémunérées selon la loi.');
+    section('Art. 5 – Congés','18 jours ouvrables par an (1,5 jour par mois de service effectif).');
+    section('Art. 6 – Obligations','Diligence, loyauté, respect du règlement intérieur, confidentialité, non-concurrence.');
+    section('Art. 7 – Résiliation','Résiliable par l\'une ou l\'autre partie avec préavis légal applicable.');
+    section('Art. 8 – Droit applicable','Régi par le Code du Travail marocain – Loi n° 65-99.');
+  } else {
+    section('Art. 1 – Objet','Engagement du '+data.debut+' au '+data.fin+'. Motif : '+data.motif+'.');
+    section('Art. 2 – Renouvellement','Renouvelable une fois pour une durée égale au contrat initial.');
+    section('Art. 3 – Horaires','44 heures hebdomadaires. Heures supplémentaires rémunérées selon la loi.');
+    section('Art. 4 – Congés','18 jours ouvrables par an proratisés sur la durée du contrat.');
+    section('Art. 5 – Obligations','Diligence, loyauté, respect du règlement intérieur, confidentialité.');
+    section('Art. 6 – Résiliation','Résiliable uniquement pour faute grave, force majeure ou accord écrit des parties.');
+    section('Art. 7 – Droit applicable','Régi par le Code du Travail marocain – Loi n° 65-99.');
+  }
+
+  y+=4;
+  doc.setFontSize(9);doc.setTextColor(100,100,100);
+  doc.text('Fait à Casablanca, le '+new Date().toLocaleDateString('fr-FR')+', en deux (2) exemplaires originaux.',lm,y);y+=12;
+  doc.setDrawColor(150,150,150);doc.setLineWidth(0.4);
+  doc.line(lm,y,lm+70,y);doc.line(rm-70,y,rm,y);y+=5;
+  doc.setFontSize(9);doc.setTextColor(40,40,40);doc.setFont(undefined,'bold');
+  doc.text("L'Employeur",lm+35,y,{align:'center'});doc.text("Le Salarié",rm-35,y,{align:'center'});y+=4;
+  doc.setFont(undefined,'normal');doc.setFontSize(8);doc.setTextColor(100,100,100);
+  doc.text('Pour ContraConnect SARL',lm+35,y,{align:'center'});
+  doc.text(fullName,rm-35,y,{align:'center'});y+=3;
+  doc.text('Signature et cachet',lm+35,y,{align:'center'});
+  doc.text('Lu et approuvé',rm-35,y,{align:'center'});
+
+  doc.save('Contrat_'+data.type+'_'+data.nom+'_'+data.prenom+'.pdf');
+}
+</script>
