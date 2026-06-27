@@ -127,6 +127,157 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    gap: 1rem;
+}
+
+.notification-wrapper {
+    position: relative;
+    margin-left: 0;
+}
+
+.notification-btn {
+    position: relative;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.notification-btn:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent-color);
+}
+
+.notification-count {
+    position: absolute;
+    top: -4px;
+    right: -2px;
+    min-width: 1.15rem;
+    height: 1.15rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    background: var(--error-color);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: calc(100% + 0.7rem);
+    right: 0;
+    width: min(320px, 92vw);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    padding: 0.75rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: all var(--transition-fast);
+    z-index: 100;
+}
+
+.notification-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.notification-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.notification-item {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    padding: 0.7rem;
+    border-radius: 10px;
+    background: var(--input-bg);
+    border: 1px solid var(--card-border);
+}
+
+.notification-item.notification-expired {
+    background: rgba(244, 63, 94, 0.15);
+    border-color: rgba(244, 63, 94, 0.35);
+}
+
+.notification-item.notification-warning {
+    background: rgba(249, 115, 22, 0.14);
+    border-color: rgba(249, 115, 22, 0.32);
+}
+
+.notification-item.notification-info {
+    background: rgba(234, 179, 8, 0.15);
+    border-color: rgba(234, 179, 8, 0.3);
+}
+
+.notification-item i {
+    color: var(--accent-color);
+    margin-top: 0.1rem;
+}
+
+.notification-item.notification-expired i {
+    color: #dc2626;
+}
+
+.notification-item.notification-warning i {
+    color: #ea580c;
+}
+
+.notification-item.notification-info i {
+    color: #ca8a04;
+}
+
+.notification-item div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.notification-item strong {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    
+}
+
+.notification-item span,
+.notification-item small {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.notification-item.status-expired {
+    background-color: #fee2e2 !important; /* L-cadre kamlo y-wlli 7mer light soft */
+    border: 1px solid #fca5a5 !important;    /* L-haichya dial cadre b l-7mer m-7addad */
+}
+
+/* 4. L-cadre dial LLI 9RIB Y-EXPIRA (Kamlo b l-orange light + border m-pigni) */
+.notification-item.status-warning {
+    background-color: #fef3c7 !important; /* L-cadre kamlo y-wlli orange/yellow light soft */
+    border: 1px solid #fcd34d !important;    /* L-haichya dial cadre b l-orange m-7addad */
+}
+
+.notification-empty {
+    padding: 0.6rem 0.2rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
 }
 
 .logo {
@@ -652,6 +803,120 @@ select {
     color: #be123c;
     background-color: #ffe4e6;
     border-color: #fecdd3;
+}
+
+/* Notifications panel */
+.notifications-panel {
+    margin-top: 2rem;
+    padding: 1.25rem;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    background: rgba(15, 23, 42, 0.25);
+}
+
+[data-theme="light"] .notifications-panel {
+    background: rgba(255, 255, 255, 0.65);
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.notifications-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.notification-summary {
+    background: var(--accent-glow);
+    color: var(--accent-color);
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.notification-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    background: var(--input-bg);
+}
+
+.notification-item.urgent {
+    border-color: rgba(244, 63, 94, 0.35);
+    box-shadow: inset 0 0 0 1px rgba(244, 63, 94, 0.12);
+}
+
+.notification-item.warning {
+    border-color: rgba(245, 158, 11, 0.35);
+}
+
+.notification-item.expired {
+    border-color: rgba(244, 63, 94, 0.45);
+    background: rgba(244, 63, 94, 0.1);
+}
+
+.notification-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.notification-name {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.notification-meta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.notification-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+}
+
+.notification-pill {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    background: var(--accent-glow);
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+}
+
+.notification-days {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.empty-state {
+    padding: 0.8rem 0.25rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
 /* SECTION 3: PREVIEW LAYOUT */

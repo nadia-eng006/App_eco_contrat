@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
         isAuthenticated: false,
         currentUser: null,
         theme: 'dark',
-        formData: null
+        formData: null,
+        employes: JSON.parse(localStorage.getItem('eco_employes')) || []
     };
 
     // --- DOM ELEMENTS CACHE ---
@@ -50,14 +51,122 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadPdfBtn = document.getElementById('download-pdf-btn');
     const contractPaperContent = document.getElementById('contract-paper-content');
 
+    // Notification Elements
+    const notificationUi = createNotificationUI();
+    const notificationBtn = notificationUi.button;
+    const notificationDropdown = notificationUi.dropdown;
+    const notificationCount = notificationUi.count;
+    const notificationList = notificationUi.list;
+
     // Toast Notification
     const toast = document.getElementById('toast-notification');
 
     // --- INITIALIZATION ---
     initTheme();
     checkSession();
+    updateNotificationList();
 
     // --- FUNCTIONS ---
+
+    function createNotificationUI() {
+        const existingButton = document.getElementById('notification-btn');
+        if (existingButton) {
+            return {
+                button: existingButton,
+                dropdown: document.getElementById('notification-dropdown'),
+                count: document.getElementById('notification-count'),
+                list: document.getElementById('notification-list')
+            };
+        }
+
+        const target = document.querySelector('.header-container') || document.querySelector('.app-header') || document.body;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'notification-wrapper';
+
+        const button = document.createElement('button');
+        button.id = 'notification-btn';
+        button.type = 'button';
+        button.className = 'notification-btn';
+        button.innerHTML = '<i class="fa-solid fa-bell"></i><span id="notification-count" class="notification-count" style="display:none;"></span>';
+
+        const dropdown = document.createElement('div');
+        dropdown.id = 'notification-dropdown';
+        dropdown.className = 'notification-dropdown';
+        dropdown.innerHTML = '<ul id="notification-list" class="notification-list"></ul>';
+
+        wrapper.appendChild(button);
+        wrapper.appendChild(dropdown);
+        target.appendChild(wrapper);
+
+        return {
+            button,
+            dropdown,
+            count: document.getElementById('notification-count'),
+            list: document.getElementById('notification-list')
+        };
+    }
+
+    function getDaysUntilEnd(dateString) {
+        const endDate = new Date(dateString);
+        const today = new Date();
+        endDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        return Math.round((endDate - today) / (1000 * 60 * 60 * 24));
+    }
+
+    function updateNotificationList() {
+        if (!notificationCount || !notificationList) return;
+
+        const visibleAlerts = (state.employes || [])
+            .filter((employee) => employee && employee.dateFinContrat)
+            .map((employee) => ({
+                ...employee,
+                daysLeft: getDaysUntilEnd(employee.dateFinContrat)
+            }))
+            .filter((employee) => employee.daysLeft <= 15 && employee.daysLeft >= -7)
+            .sort((a, b) => a.daysLeft - b.daysLeft);
+
+        if (visibleAlerts.length > 0) {
+            notificationCount.textContent = visibleAlerts.length;
+            notificationCount.style.display = 'flex';
+            notificationList.innerHTML = visibleAlerts.map((employee) => {
+                const fullName = `${employee.prenom || employee.firstname || ''} ${employee.nom || employee.lastname || ''}`.trim();
+                const endDate = employee.dateFinContrat ? formatDateFR(employee.dateFinContrat) : 'Date non renseignée';
+                const daysLeft = employee.daysLeft;
+                const message = daysLeft < 0
+                    ? `a expiré depuis ${Math.abs(daysLeft)} jour${Math.abs(daysLeft) > 1 ? 's' : ''}`
+                    : daysLeft === 0
+                        ? 'expire aujourd\'hui'
+                        : `reste ${daysLeft} jour${daysLeft > 1 ? 's' : ''} à expirer`;
+                const stateClass = daysLeft < 0 ? 'notification-expired' : daysLeft <= 5 ? 'notification-warning' : 'notification-info';
+
+                return `
+                    <li class="notification-item ${stateClass}">
+                        <i class="fa-solid fa-calendar-xmark"></i>
+                        <div>
+                            <strong>${fullName}</strong>
+                            <span>${message}</span>
+                            <small>Fin : ${endDate}</small>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+        } else {
+            notificationCount.style.display = 'none';
+            notificationList.innerHTML = '<li class="notification-empty">Aucune alerte pour le moment.</li>';
+        }
+    }
+
+    if (notificationBtn && notificationDropdown) {
+        notificationBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notificationDropdown.classList.toggle('active');
+        });
+
+        document.addEventListener('click', () => {
+            notificationDropdown.classList.remove('active');
+        });
+    }
 
     // 1. Theme Functions
     function initTheme() {
@@ -113,10 +222,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show selected view
         if (viewName === 'login') {
             loginView.classList.add('active-view');
+            if (notificationBtn) notificationBtn.style.display = 'none';
+            if (notificationDropdown) notificationDropdown.classList.remove('active');
         } else if (viewName === 'form') {
             formView.classList.add('active-view');
+            if (notificationBtn) notificationBtn.style.display = 'flex';
         } else if (viewName === 'preview') {
             contractPreviewView.classList.add('active-view');
+            if (notificationBtn) notificationBtn.style.display = 'flex';
         }
         // Scroll to top of the page smoothly on transition
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -263,19 +376,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Store Form Data in State
         const selectedContractType = contractTypeSelect.value;
-        const selectedGender = document.querySelector('input[name="employee-gender"]:checked')?.value || 'homme';
         state.formData = {
             lastname: document.getElementById('employee-lastname').value.trim(),
             firstname: document.getElementById('employee-firstname').value.trim(),
             birthdate: document.getElementById('employee-birthdate').value,
             cin: document.getElementById('employee-cin').value.trim(),
             address: document.getElementById('employee-address').value.trim(),
-            gender: selectedGender,
             contractType: selectedContractType,
             hireDate: hireDateInput.value,
             position: selectedContractType === 'cdi' ? (employeePosition.value.trim() || 'Collaborateur Technique et Administratif') : null,
             salary: selectedContractType === 'cdi' ? (employeeSalary.value ? parseFloat(employeeSalary.value).toLocaleString('fr-FR') : 'Non Spécifié') : null
         };
+
+        if (selectedContractType === 'cdd') {
+            const endDate = new Date(hireDateInput.value);
+            endDate.setMonth(endDate.getMonth() + 3);
+            state.employes.push({
+                nom: state.formData.lastname,
+                prenom: state.formData.firstname,
+                dateFinContrat: endDate.toISOString().split('T')[0]
+            });
+            localStorage.setItem('eco_employes', JSON.stringify(state.employes));
+            updateNotificationList();
+        }
 
         // Render Preview Page
         generateContractHTML(state.formData);
@@ -304,8 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function generateContractHTML(data) {
-        const titlePrefix = data.gender === 'homme' ? 'MR' : 'MME';
-        const fullName = `${titlePrefix} ${data.firstname.toUpperCase()} ${data.lastname.toUpperCase()}`;
+        const fullName = `${data.firstname.toUpperCase()} ${data.lastname.toUpperCase()}`;
         const birthDateFormatted = formatDateFR(data.birthdate);
         const hireDateFormatted = formatDateFR(data.hireDate);
         
@@ -372,29 +494,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- ARTICLE 6 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE SIXIEME : Règlement Interne</h4>
-                    <p><strong>${fullName}</strong> déclare avoir pris connaissance du règlement interne et s'engage à respecter toutes les règles de fonctionnement émanant de la Direction.</p>
+                    <p>MR <strong>${fullName}</strong> Déclare avoir pris connaissance du règlement interne et s'engage à et toutes les règles de fonctionnement émanant de la Direction.</p>
                 </div>
 
                 <!-- ARTICLE 7 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE SEPTIEME : Absences</h4>
-                    <p>En cas d'empêchement à remplir ses fonctions, quelle qu'en soit la cause, <strong>${fullName}</strong> s'engage à informer la direction et à justifier de son absence dans les 24 heures, sauf circonstances exceptionnelles.</p>
+                    <p>En cas d'empêchement à remplir ses fonctions, quelle qu'en soit la cause, MR <strong>${fullName}</strong> s'engage à informer la direction et à justifier de son absence dans les 24 heures, sauf circonstances exceptionnelles.</p>
                 </div>
 
                 <!-- ARTICLE 8 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE HUITIEME : Exclusivité - Discrétion</h4>
-                    <p style="margin-bottom: 0.5rem;"><strong>${fullName}</strong>, s'engage à travailler exclusivement pour le compte de la société « ECO TRANSFO » -S.A.R.L. et à y consacrer tout son temps.</p>
-                    <p style="margin-bottom: 0.5rem;">Pendant la durée du présent contrat, <strong>${fullName}</strong>, s'interdit de s'intéresser directement ou indirectement de quelque manière et à quelque titre que ce soit, à toute autre affaire, et ce, sur l'ensemble de sa zone d'activité.</p>
-                    <p style="margin-bottom: 0.5rem;"><strong>${fullName}</strong> devra se considérer comme lié par une obligation de discrétion absolue en ce qui concerne toutes les informations, ainsi que, tous renseignements confidentiels dont il pourrait avoir connaissance.</p>
+                    <p style="margin-bottom: 0.5rem;">MR <strong>${fullName}</strong>, s'engage à travailler exclusivement pour le compte de la société « ECO TRANSFO » -S.A.R.L. et à y consacrer tout son temps.</p>
+                    <p style="margin-bottom: 0.5rem;">Pendant la durée du présent contrat, MR <strong>${fullName}</strong>, s'interdit de s'intéresser directement ou indirectement de quelque manière et à quelque titre que ce soit, à toute autre affaire, et ce, sur l'ensemble de sa zone d'activité.</p>
+                    <p style="margin-bottom: 0.5rem;">MR <strong>${fullName}</strong>. Devra se considérer comme lié par une obligation de discrétion absolue en ce qui concerne toutes les informations, ainsi que, tous renseignements confidentiels dont il pourrait avoir connaissance.</p>
                     <p style="margin-bottom: 0.5rem;">Tout manquement à cette obligation au cours du contrat constituerait une faute grave pouvant justifier un licenciement.</p>
-                    <p>Cette clause de discrétion devra également être respectée par <strong>${fullName}</strong> après la rupture du présent contrat.</p>
+                    <p>Cette clause de discrétion devra également être respectée par MR <strong>${fullName}</strong> après la rupture du présent contrat.</p>
                 </div>
 
                 <!-- ARTICLE 9 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE NEUVIEME : Congés payés</h4>
-                    <p style="margin-bottom: 0.5rem;"><strong>${fullName}</strong> bénéficiera des congés payés selon la législation en vigueur.</p>
+                    <p style="margin-bottom: 0.5rem;">MR <strong>${fullName}</strong> bénéficiera des congés payés selon la législation en vigueur.</p>
                     <p>La période de prise de congés payés sera fixée chaque année par l'employeur en tenant compte des nécessités du service et de la nature de l'activité de la société.</p>
                 </div>
 
@@ -407,7 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- ARTICLE 11 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE ONZE : Clause de non-concurrence</h4>
-                    <p style="text-align: justify;"><strong>${fullName}</strong> s'engage, à compter de la cessation effective du présent contrat, quel qu'en soit le motif, à s'abstenir de toute activité concurrente dans les conditions ci-après. Pendant la durée d'application de la présente clause, le Salarié s'interdit, directement ou indirectement, pour son compte ou pour le compte de tiers, y compris par personne interposée ou au travers de toute entité : (i) d'exercer, de créer, de conseiller, d'administrer, de financer ou de détenir des intérêts (participations, titres, droits, options ou intérêts économiques de toute nature) dans toute activité se rapportant de quelque manière que ce soit aux activités d'ECO TRANSFO ; (ii) d'entrer au service, à quelque titre que ce soit (salariat, mandat social, prestation indépendante, sous-traitance, courtage, représentation, etc.) d'une entreprise exerçant tout ou partie d'activités se rapportant, de quelque manière que ce soit, aux activités d'ECO TRANSFO ; (iii) de démarcher, détourner ou tenter de détourner la clientèle d'ECO TRANSFO en vue de proposer des produits ou services concurrents. L'interdiction ci-dessus s'applique sur l'ensemble des territoires dans lesquels ECO TRANSFO est opérationnel (ou en cours de mise en place de contrats) et pendant une durée de cinq (5) ans à compter de la rupture du contrat. En cas de violation de la présente clause <strong>${fullName}</strong> sera redevable, sans mise en demeure préalable, d'une pénalité égale au manque à gagner causé par sa violation. La présente clause est indépendante des engagements de confidentialité et de non-sollicitation des clients et/ou des salariés de l'Employeur stipulés par ailleurs, lesquels demeurent applicables selon leurs propres termes.</p>
+                    <p style="text-align: justify;">MR <strong>${fullName}</strong> s'engage, à compter de la cessation effective du présent contrat, quel qu'en soit le motif, à s'abstenir de toute activité concurrente dans les conditions ci-après. Pendant la durée d'application de la présente clause, le Salarié s'interdit, directement ou indirectement, pour son compte ou pour le compte de tiers, y compris par personne interposée ou au travers de toute entité : (i) d'exercer, de créer, de conseiller, d'administrer, de financer ou de détenir des intérêts (participations, titres, droits, options ou intérêts économiques de toute nature) dans toute activité se rapportant de quelque manière que ce soit aux activités d'ECO TRANSFO ; (ii) d'entrer au service, à quelque titre que ce soit (salariat, mandat social, prestation indépendante, sous-traitance, courtage, représentation, etc.) d'une entreprise exerçant tout ou partie d'activités se rapportant, de quelque manière que ce soit, aux activités d'ECO TRANSFO ; (iii) de démarcher, détourner ou tenter de détourner la clientèle d'ECO TRANSFO en vue de proposer des produits ou services concurrents. L'interdiction ci-dessus s'applique sur l'ensemble des territoires dans lesquels ECO TRANSFO est opérationnel (ou en cours de mise en place de contrats) et pendant une durée de cinq (5) ans à compter de la rupture du contrat. En cas de violation de la présente clause MR <strong>${fullName}</strong> sera redevable, sans mise en demeure préalable, d'une pénalité égale au manque à gagner causé par sa violation. La présente clause est indépendante des engagements de confidentialité et de non-sollicitation des clients et/ou des salariés de l'Employeur stipulés par ailleurs, lesquels demeurent applicables selon leurs propres termes.</p>
                 </div>
 
                 <!-- ARTICLE 12 -->
@@ -429,7 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span>La société « ECO TRANSFO » -S.A.R.L.</span>
                     </div>
                     <div style="width: 50%; text-align: right; display: flex; flex-direction: column; gap: 5rem; font-weight: bold;">
-                <span><strong>${fullName}</strong></span>
+                <span>MR <strong>${fullName}</strong></span>
                     </div>
                 </div>
             `;
