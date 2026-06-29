@@ -1,4 +1,4 @@
-/* ==========================================================================
+/* ===========================/* ==========================================================================
    EcoContrat - Stylesheet & Design System
    ========================================================================== */
 
@@ -865,14 +865,13 @@ select {
     margin-top: 2.5rem;
     display: flex;
     justify-content: flex-end;
-    gap: 0.85rem;
-    flex-wrap: wrap;
     border-top: 1px solid var(--card-border);
     padding-top: 1.5rem;
 }
 
 .contracts-list-card {
-    width: min(100%, 980px);
+    max-width: 980px;
+    width: 100%;
     margin: 0 auto;
 }
 
@@ -881,88 +880,97 @@ select {
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.list-page-header h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.3rem;
 }
 
 .contracts-count {
-    width: fit-content;
-    margin: 1rem 0 1.25rem;
-    padding: 0.45rem 0.85rem;
-    border-radius: 999px;
-    background: rgba(26, 176, 78, 0.16);
-    color: var(--accent-color);
-    font-weight: 800;
-    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
 }
 
 .contracts-list-container {
     display: flex;
     flex-direction: column;
-    gap: 0.9rem;
+    gap: 1rem;
 }
 
 .contract-list-item {
-    display: grid;
-    grid-template-columns: minmax(180px, 1fr) auto;
-    gap: 1rem;
-    align-items: center;
-    padding: 1rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1.2rem 1.25rem;
+    border-radius: 20px;
     border: 1px solid var(--card-border);
-    border-radius: 14px;
     background: var(--input-bg);
     box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.contract-list-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-color);
 }
 
 .contract-list-main {
-    min-width: 0;
-}
-
-.contract-list-main strong,
-.contract-list-main span {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .contract-list-main strong {
-    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
     font-size: 1rem;
-    font-weight: 800;
+    color: var(--text-primary);
 }
 
 .contract-list-main span {
-    margin-top: 0.2rem;
     color: var(--text-secondary);
-    font-weight: 600;
+    font-size: 0.95rem;
 }
 
 .contract-list-meta {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 0.6rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
     color: var(--text-secondary);
-    font-size: 0.86rem;
-    font-weight: 600;
+    font-size: 0.92rem;
+}
+
+.contract-list-meta span {
+    display: inline-flex;
+    gap: 0.45rem;
+    align-items: center;
 }
 
 .contract-type-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 0.35rem 0.75rem;
     border-radius: 999px;
-    background: rgba(59, 130, 246, 0.14);
-    color: #60a5fa;
-    font-size: 0.78rem;
-    font-weight: 800;
+    border: 1px solid var(--accent-color);
+    background: rgba(26, 176, 78, 0.12);
+    color: var(--accent-color);
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 .contracts-empty {
-    padding: 1.25rem;
-    border: 1px dashed var(--input-border);
-    border-radius: 14px;
+    padding: 1.25rem 1rem;
+    border-radius: 18px;
+    border: 1px dashed var(--card-border);
+    background: rgba(255, 255, 255, 0.04);
     color: var(--text-secondary);
-    text-align: center;
+    font-size: 0.95rem;
 }
 
 /* Feedback elements */
@@ -1389,25 +1397,6 @@ select {
 }
 
 @media (max-width: 768px) {
-    .form-actions,
-    .list-page-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .form-actions .btn,
-    .list-page-header .btn {
-        width: 100%;
-    }
-
-    .contract-list-item {
-        grid-template-columns: 1fr;
-    }
-
-    .contract-list-meta {
-        justify-content: flex-start;
-    }
-
     .form-grid {
         grid-template-columns: 1fr;
     }
@@ -1426,8 +1415,7 @@ select {
     
     .glass-card {
         padding: 1.5rem;
-    }
-    
+    }  
     .contract-paper {
         padding: 2rem 1.5rem;
         min-height: auto;

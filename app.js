@@ -180,7 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
             expirationDate: employee.dateFinContrat || '',
             createdAt: ''
         }));
-
         const seenContracts = new Set();
 
         return [...savedContracts, ...legacyCddContracts]
@@ -208,11 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         contractsListCount.textContent = `${contracts.length} contrat${contracts.length > 1 ? 's' : ''}`;
 
         if (contracts.length === 0) {
-            contractsListContainer.innerHTML = `
-                <div class="contracts-empty">
-                    Aucun contrat enregistré pour le moment.
-                </div>
-            `;
+            contractsListContainer.innerHTML = '<div class="contracts-empty">Aucun contrat enregistre pour le moment.</div>';
             return;
         }
 
@@ -221,19 +216,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const firstname = contract.firstname || '';
             const type = (contract.contractType || '-').toUpperCase();
             const hireDate = contract.hireDate ? formatDateFR(contract.hireDate) : '-';
-            const expiration = contract.expirationDate
-                ? formatDateFR(contract.expirationDate)
-                : 'Durée indéterminée';
+            const expiration = contract.expirationDate ? formatDateFR(contract.expirationDate) : 'Duree indeterminee';
 
             return `
                 <div class="contract-list-item">
                     <div class="contract-list-main">
-                        <strong>${lastname}</strong>
-                        <span>${firstname}</span>
+                        <strong>${lastname || '-'}</strong>
+                        <span>${firstname || '-'}</span>
                     </div>
                     <div class="contract-list-meta">
                         <span class="contract-type-pill">${type}</span>
-                        <span><i class="fa-solid fa-calendar-check"></i> Échéance : ${expiration}</span>
+                        <span><i class="fa-regular fa-calendar"></i> Embauche : ${hireDate}</span>
+                        <span><i class="fa-solid fa-calendar-check"></i> Echeance : ${expiration}</span>
                     </div>
                 </div>
             `;
@@ -505,10 +499,12 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('eco_contracts', JSON.stringify(state.contracts));
 
         if (selectedContractType === 'cdd') {
+            const endDate = new Date(hireDateInput.value);
+            endDate.setMonth(endDate.getMonth() + 3);
             state.employes.push({
                 nom: state.formData.lastname,
                 prenom: state.formData.firstname,
-                dateFinContrat: expirationDate
+                dateFinContrat: endDate.toISOString().split('T')[0]
             });
             localStorage.setItem('eco_employes', JSON.stringify(state.employes));
             updateNotificationList();
@@ -554,9 +550,6 @@ document.addEventListener('DOMContentLoaded', () => {
         summaryFullname.textContent = `${genderLabel} ${data.lastname} ${data.firstname}`;
         summaryType.textContent = data.contractType.toUpperCase();
         summaryDate.textContent = hireDateFormatted;
-        if (summaryExpiration) {
-            summaryExpiration.textContent = data.expirationDate ? formatDateFR(data.expirationDate) : 'Durée indéterminée';
-        }
 
         if (data.contractType === 'cdi') {
             const template = `
