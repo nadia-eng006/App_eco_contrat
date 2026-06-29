@@ -376,9 +376,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Store Form Data in State
         const selectedContractType = contractTypeSelect.value;
+        const selectedGender = document.querySelector('input[name="employee-gender"]:checked')?.value || 'homme';
+
         state.formData = {
             lastname: document.getElementById('employee-lastname').value.trim(),
             firstname: document.getElementById('employee-firstname').value.trim(),
+            gender: selectedGender,
             birthdate: document.getElementById('employee-birthdate').value,
             cin: document.getElementById('employee-cin').value.trim(),
             address: document.getElementById('employee-address').value.trim(),
@@ -426,13 +429,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return date.toISOString().split('T')[0];
     }
 
+    function getGenderLabel(gender) {
+        return gender === 'femme' ? 'Mme' : 'Mr';
+    }
+
     function generateContractHTML(data) {
-        const fullName = `${data.firstname.toUpperCase()} ${data.lastname.toUpperCase()}`;
+        const genderLabel = getGenderLabel(data.gender);
+        const fullName = `${genderLabel} ${data.lastname.toUpperCase()} ${data.firstname.toUpperCase()}`;
         const birthDateFormatted = formatDateFR(data.birthdate);
         const hireDateFormatted = formatDateFR(data.hireDate);
         
         // Update Sidebar Summary
-        summaryFullname.textContent = `${data.firstname} ${data.lastname}`;
+        summaryFullname.textContent = `${genderLabel} ${data.lastname} ${data.firstname}`;
         summaryType.textContent = data.contractType.toUpperCase();
         summaryDate.textContent = hireDateFormatted;
 
@@ -494,29 +502,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- ARTICLE 6 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE SIXIEME : Règlement Interne</h4>
-                    <p>MR <strong>${fullName}</strong> Déclare avoir pris connaissance du règlement interne et s'engage à et toutes les règles de fonctionnement émanant de la Direction.</p>
+                    <p> <strong>${fullName}</strong> Déclare avoir pris connaissance du règlement interne et s'engage à et toutes les règles de fonctionnement émanant de la Direction.</p>
                 </div>
 
                 <!-- ARTICLE 7 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE SEPTIEME : Absences</h4>
-                    <p>En cas d'empêchement à remplir ses fonctions, quelle qu'en soit la cause, MR <strong>${fullName}</strong> s'engage à informer la direction et à justifier de son absence dans les 24 heures, sauf circonstances exceptionnelles.</p>
+                    <p>En cas d'empêchement à remplir ses fonctions, quelle qu'en soit la cause, ${fullName} s'engage à informer la direction et à justifier de son absence dans les 24 heures, sauf circonstances exceptionnelles.</p>
                 </div>
 
                 <!-- ARTICLE 8 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE HUITIEME : Exclusivité - Discrétion</h4>
-                    <p style="margin-bottom: 0.5rem;">MR <strong>${fullName}</strong>, s'engage à travailler exclusivement pour le compte de la société « ECO TRANSFO » -S.A.R.L. et à y consacrer tout son temps.</p>
-                    <p style="margin-bottom: 0.5rem;">Pendant la durée du présent contrat, MR <strong>${fullName}</strong>, s'interdit de s'intéresser directement ou indirectement de quelque manière et à quelque titre que ce soit, à toute autre affaire, et ce, sur l'ensemble de sa zone d'activité.</p>
-                    <p style="margin-bottom: 0.5rem;">MR <strong>${fullName}</strong>. Devra se considérer comme lié par une obligation de discrétion absolue en ce qui concerne toutes les informations, ainsi que, tous renseignements confidentiels dont il pourrait avoir connaissance.</p>
+                    <p style="margin-bottom: 0.5rem;"> <strong>${fullName}</strong>, s'engage à travailler exclusivement pour le compte de la société « ECO TRANSFO » -S.A.R.L. et à y consacrer tout son temps.</p>
+                    <p style="margin-bottom: 0.5rem;">Pendant la durée du présent contrat, ${fullName}, s'interdit de s'intéresser directement ou indirectement de quelque manière et à quelque titre que ce soit, à toute autre affaire, et ce, sur l'ensemble de sa zone d'activité.</p>
+                    <p style="margin-bottom: 0.5rem;">${fullName}. Devra se considérer comme lié par une obligation de discrétion absolue en ce qui concerne toutes les informations, ainsi que, tous renseignements confidentiels dont il pourrait avoir connaissance.</p>
                     <p style="margin-bottom: 0.5rem;">Tout manquement à cette obligation au cours du contrat constituerait une faute grave pouvant justifier un licenciement.</p>
-                    <p>Cette clause de discrétion devra également être respectée par MR <strong>${fullName}</strong> après la rupture du présent contrat.</p>
+                    <p>Cette clause de discrétion devra également être respectée par ${fullName} après la rupture du présent contrat.</p>
                 </div>
 
                 <!-- ARTICLE 9 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE NEUVIEME : Congés payés</h4>
-                    <p style="margin-bottom: 0.5rem;">MR <strong>${fullName}</strong> bénéficiera des congés payés selon la législation en vigueur.</p>
+                    <p style="margin-bottom: 0.5rem;"> <strong>${fullName}</strong> bénéficiera des congés payés selon la législation en vigueur.</p>
                     <p>La période de prise de congés payés sera fixée chaque année par l'employeur en tenant compte des nécessités du service et de la nature de l'activité de la société.</p>
                 </div>
 
@@ -529,7 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- ARTICLE 11 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE ONZE : Clause de non-concurrence</h4>
-                    <p style="text-align: justify;">MR <strong>${fullName}</strong> s'engage, à compter de la cessation effective du présent contrat, quel qu'en soit le motif, à s'abstenir de toute activité concurrente dans les conditions ci-après. Pendant la durée d'application de la présente clause, le Salarié s'interdit, directement ou indirectement, pour son compte ou pour le compte de tiers, y compris par personne interposée ou au travers de toute entité : (i) d'exercer, de créer, de conseiller, d'administrer, de financer ou de détenir des intérêts (participations, titres, droits, options ou intérêts économiques de toute nature) dans toute activité se rapportant de quelque manière que ce soit aux activités d'ECO TRANSFO ; (ii) d'entrer au service, à quelque titre que ce soit (salariat, mandat social, prestation indépendante, sous-traitance, courtage, représentation, etc.) d'une entreprise exerçant tout ou partie d'activités se rapportant, de quelque manière que ce soit, aux activités d'ECO TRANSFO ; (iii) de démarcher, détourner ou tenter de détourner la clientèle d'ECO TRANSFO en vue de proposer des produits ou services concurrents. L'interdiction ci-dessus s'applique sur l'ensemble des territoires dans lesquels ECO TRANSFO est opérationnel (ou en cours de mise en place de contrats) et pendant une durée de cinq (5) ans à compter de la rupture du contrat. En cas de violation de la présente clause MR <strong>${fullName}</strong> sera redevable, sans mise en demeure préalable, d'une pénalité égale au manque à gagner causé par sa violation. La présente clause est indépendante des engagements de confidentialité et de non-sollicitation des clients et/ou des salariés de l'Employeur stipulés par ailleurs, lesquels demeurent applicables selon leurs propres termes.</p>
+                    <p style="text-align: justify;"> <strong>${fullName}</strong> s'engage, à compter de la cessation effective du présent contrat, quel qu'en soit le motif, à s'abstenir de toute activité concurrente dans les conditions ci-après. Pendant la durée d'application de la présente clause, le Salarié s'interdit, directement ou indirectement, pour son compte ou pour le compte de tiers, y compris par personne interposée ou au travers de toute entité : (i) d'exercer, de créer, de conseiller, d'administrer, de financer ou de détenir des intérêts (participations, titres, droits, options ou intérêts économiques de toute nature) dans toute activité se rapportant de quelque manière que ce soit aux activités d'ECO TRANSFO ; (ii) d'entrer au service, à quelque titre que ce soit (salariat, mandat social, prestation indépendante, sous-traitance, courtage, représentation, etc.) d'une entreprise exerçant tout ou partie d'activités se rapportant, de quelque manière que ce soit, aux activités d'ECO TRANSFO ; (iii) de démarcher, détourner ou tenter de détourner la clientèle d'ECO TRANSFO en vue de proposer des produits ou services concurrents. L'interdiction ci-dessus s'applique sur l'ensemble des territoires dans lesquels ECO TRANSFO est opérationnel (ou en cours de mise en place de contrats) et pendant une durée de cinq (5) ans à compter de la rupture du contrat. En cas de violation de la présente clause <strong>${fullName}</strong> sera redevable, sans mise en demeure préalable, d'une pénalité égale au manque à gagner causé par sa violation. La présente clause est indépendante des engagements de confidentialité et de non-sollicitation des clients et/ou des salariés de l'Employeur stipulés par ailleurs, lesquels demeurent applicables selon leurs propres termes.</p>
                 </div>
 
                 <!-- ARTICLE 12 -->
@@ -551,7 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span>La société « ECO TRANSFO » -S.A.R.L.</span>
                     </div>
                     <div style="width: 50%; text-align: right; display: flex; flex-direction: column; gap: 5rem; font-weight: bold;">
-                <span>MR <strong>${fullName}</strong></span>
+                <span> <strong>${fullName}</strong></span>
                     </div>
                 </div>
             `;
