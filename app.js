@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUser: null,
         theme: 'dark',
         formData: null,
+        contracts: JSON.parse(localStorage.getItem('eco_contracts')) || [],
         employes: JSON.parse(localStorage.getItem('eco_employes')) || []
     };
 
@@ -17,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Views
     const loginView = document.getElementById('login-view');
     const formView = document.getElementById('form-view');
+    const contractsListView = document.getElementById('contracts-list-view');
     const contractPreviewView = document.getElementById('contract-preview-view');
     
     // Header & Navigation
@@ -42,11 +44,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const employeePosition = document.getElementById('employee-position');
     const employeeSalary = document.getElementById('employee-salary');
     const hireDateInput = document.getElementById('hire-date');
+    const contractsListBtn = document.getElementById('contracts-list-btn');
+
+    // Contracts List Page
+    const backFromListBtn = document.getElementById('back-from-list-btn');
+    const contractsListCount = document.getElementById('contracts-list-count');
+    const contractsListContainer = document.getElementById('contracts-list-container');
 
     // Preview Page
     const summaryFullname = document.getElementById('summary-fullname');
     const summaryType = document.getElementById('summary-type');
     const summaryDate = document.getElementById('summary-date');
+    const summaryExpiration = document.getElementById('summary-expiration');
     const backToFormBtn = document.getElementById('back-to-form-btn');
     const downloadPdfBtn = document.getElementById('download-pdf-btn');
     const contractPaperContent = document.getElementById('contract-paper-content');
@@ -157,6 +166,80 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function getContractExpirationDate(contractType, hireDate) {
+        return contractType === 'cdd' ? addMonths(hireDate, 3) : null;
+    }
+
+    function getAllContractsForList() {
+        const savedContracts = Array.isArray(state.contracts) ? state.contracts : [];
+        const legacyCddContracts = (state.employes || []).map((employee) => ({
+            lastname: employee.nom || employee.lastname || '',
+            firstname: employee.prenom || employee.firstname || '',
+            contractType: 'cdd',
+            hireDate: '',
+            expirationDate: employee.dateFinContrat || '',
+            createdAt: ''
+        }));
+
+        const seenContracts = new Set();
+
+        return [...savedContracts, ...legacyCddContracts]
+            .filter((contract) => contract && (contract.lastname || contract.firstname))
+            .filter((contract) => {
+                const key = [
+                    (contract.lastname || '').toLowerCase(),
+                    (contract.firstname || '').toLowerCase(),
+                    contract.contractType || '',
+                    contract.hireDate || '',
+                    contract.expirationDate || ''
+                ].join('|');
+
+                if (seenContracts.has(key)) return false;
+                seenContracts.add(key);
+                return true;
+            })
+            .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+    }
+
+    function renderContractsList() {
+        if (!contractsListCount || !contractsListContainer) return;
+
+        const contracts = getAllContractsForList();
+        contractsListCount.textContent = `${contracts.length} contrat${contracts.length > 1 ? 's' : ''}`;
+
+        if (contracts.length === 0) {
+            contractsListContainer.innerHTML = `
+                <div class="contracts-empty">
+                    Aucun contrat enregistré pour le moment.
+                </div>
+            `;
+            return;
+        }
+
+        contractsListContainer.innerHTML = contracts.map((contract) => {
+            const lastname = (contract.lastname || '').toUpperCase();
+            const firstname = contract.firstname || '';
+            const type = (contract.contractType || '-').toUpperCase();
+            const hireDate = contract.hireDate ? formatDateFR(contract.hireDate) : '-';
+            const expiration = contract.expirationDate
+                ? formatDateFR(contract.expirationDate)
+                : 'Durée indéterminée';
+
+            return `
+                <div class="contract-list-item">
+                    <div class="contract-list-main">
+                        <strong>${lastname}</strong>
+                        <span>${firstname}</span>
+                    </div>
+                    <div class="contract-list-meta">
+                        <span class="contract-type-pill">${type}</span>
+                        <span><i class="fa-solid fa-calendar-check"></i> Échéance : ${expiration}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
     if (notificationBtn && notificationDropdown) {
         notificationBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -217,6 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Remove active-view class from all
         loginView.classList.remove('active-view');
         formView.classList.remove('active-view');
+        contractsListView.classList.remove('active-view');
         contractPreviewView.classList.remove('active-view');
 
         // Show selected view
@@ -227,12 +311,28 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (viewName === 'form') {
             formView.classList.add('active-view');
             if (notificationBtn) notificationBtn.style.display = 'flex';
+        } else if (viewName === 'contracts-list') {
+            renderContractsList();
+            contractsListView.classList.add('active-view');
+            if (notificationBtn) notificationBtn.style.display = 'flex';
         } else if (viewName === 'preview') {
             contractPreviewView.classList.add('active-view');
             if (notificationBtn) notificationBtn.style.display = 'flex';
         }
         // Scroll to top of the page smoothly on transition
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    if (contractsListBtn) {
+        contractsListBtn.addEventListener('click', () => {
+            showView('contracts-list');
+        });
+    }
+
+    if (backFromListBtn) {
+        backFromListBtn.addEventListener('click', () => {
+            showView('form');
+        });
     }
 
     // Toggle Password Visibility
@@ -377,6 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Store Form Data in State
         const selectedContractType = contractTypeSelect.value;
         const selectedGender = document.querySelector('input[name="employee-gender"]:checked')?.value || 'homme';
+        const expirationDate = getContractExpirationDate(selectedContractType, hireDateInput.value);
 
         state.formData = {
             lastname: document.getElementById('employee-lastname').value.trim(),
@@ -387,17 +488,27 @@ document.addEventListener('DOMContentLoaded', () => {
             address: document.getElementById('employee-address').value.trim(),
             contractType: selectedContractType,
             hireDate: hireDateInput.value,
+            expirationDate: expirationDate,
             position: selectedContractType === 'cdi' ? (employeePosition.value.trim() || 'Collaborateur Technique et Administratif') : null,
             salary: selectedContractType === 'cdi' ? (employeeSalary.value ? parseFloat(employeeSalary.value).toLocaleString('fr-FR') : 'Non Spécifié') : null
         };
 
+        state.contracts.push({
+            lastname: state.formData.lastname,
+            firstname: state.formData.firstname,
+            gender: state.formData.gender,
+            contractType: state.formData.contractType,
+            hireDate: state.formData.hireDate,
+            expirationDate: state.formData.expirationDate,
+            createdAt: new Date().toISOString()
+        });
+        localStorage.setItem('eco_contracts', JSON.stringify(state.contracts));
+
         if (selectedContractType === 'cdd') {
-            const endDate = new Date(hireDateInput.value);
-            endDate.setMonth(endDate.getMonth() + 3);
             state.employes.push({
                 nom: state.formData.lastname,
                 prenom: state.formData.firstname,
-                dateFinContrat: endDate.toISOString().split('T')[0]
+                dateFinContrat: expirationDate
             });
             localStorage.setItem('eco_employes', JSON.stringify(state.employes));
             updateNotificationList();
@@ -443,6 +554,9 @@ document.addEventListener('DOMContentLoaded', () => {
         summaryFullname.textContent = `${genderLabel} ${data.lastname} ${data.firstname}`;
         summaryType.textContent = data.contractType.toUpperCase();
         summaryDate.textContent = hireDateFormatted;
+        if (summaryExpiration) {
+            summaryExpiration.textContent = data.expirationDate ? formatDateFR(data.expirationDate) : 'Durée indéterminée';
+        }
 
         if (data.contractType === 'cdi') {
             const template = `
