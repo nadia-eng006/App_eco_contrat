@@ -368,14 +368,14 @@ body {
 }
 
 .notification-item.status-expired {
-    background-color: #fee2e2 !important; /* L-cadre kamlo y-wlli 7mer light soft */
-    border: 1px solid #fca5a5 !important;    /* L-haichya dial cadre b l-7mer m-7addad */
+    background-color: #fee2e2 !important; 
+    border: 1px solid #fca5a5 !important;   
 }
 
-/* 4. L-cadre dial LLI 9RIB Y-EXPIRA (Kamlo b l-orange light + border m-pigni) */
+
 .notification-item.status-warning {
-    background-color: #fef3c7 !important; /* L-cadre kamlo y-wlli orange/yellow light soft */
-    border: 1px solid #fcd34d !important;    /* L-haichya dial cadre b l-orange m-7addad */
+    background-color: #fef3c7 !important; 
+    border: 1px solid #fcd34d !important;    
 }
 
 .notification-empty {
@@ -1234,7 +1234,7 @@ select {
     background-color: var(--paper-bg);
     color: var(--paper-text);
     width: 100%;
-    max-width: 794px; /* A4 Ratio Width */
+    max-width: 794px; 
     min-height: 1123px; /* A4 Ratio Height */
     padding: 4.5rem 3.5rem;
     box-shadow: var(--shadow-lg);
@@ -1423,17 +1423,78 @@ select {
 }
 
 /* Print CSS Styles overrides for pdf download */
+@page {
+    size: A4 portrait;
+    margin: 0;
+}
+
 @media print {
-    body {
-        background: none;
-        color: #000;
+    html, body {
+        background: white !important;
+        color: #000 !important;
+        margin: 0 !important;
+        -webkit-print-color-adjust: exact !important;
     }
+
+    /* Center the paper area and remove any decorative frame */
+    .contract-paper-container {
+        background: transparent !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+    }
+    
     .contract-paper {
-        border: none;
-        box-shadow: none;
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        background: white;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 18mm 18mm 18mm 18mm !important;
+        margin: 0 !important;
+        width: 210mm !important;
+        min-height: 297mm !important;
+        max-width: 210mm !important;
+        background: white !important;
+        border-radius: 0 !important;
+        font-family: 'Merriweather', 'Georgia', serif !important;
+        font-size: 11pt !important;
+        line-height: 1.6 !important;
+        text-align: justify;
+        letter-spacing: -0.01em;
+    }
+
+    /* Remove decorative UI elements */
+    .bg-glow, .app-header, .sidebar-card, .notification-dropdown, .toast, .no-print, .hide-on-print {
+        display: none !important;
+    }
+
+    /* Remove any title container frame (inline style backup) */
+    .contract-title-container {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 auto 16px auto !important;
+        max-width: 100% !important;
+        text-align: center !important;
+    }
+
+    /* Prevent page breaks inside key blocks */
+    .contract-paper, .contract-article, .contract-signatures, .contract-parties, .signature-box {
+        page-break-inside: avoid !important;
+    }
+
+    /* Slight typographic shrink to help fit longer contracts on a single page */
+    body, .contract-paper {
+        font-size: 10.5pt !important;
+    }
+
+    /* Ensure images and tables scale to page */
+    img, table {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Remove any outlines or shadows globally for print */
+    * {
+        box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        background-image: none !important;
     }
 }

@@ -553,7 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (data.contractType === 'cdi') {
             const template = `
-                <div class="contract-title-container" style="border: 3px double #000; padding: 1.5rem; text-align: center; max-width: 500px; margin: 0 auto 2.5rem auto;">
+                <div class="contract-title-container" style="padding: 1.5rem; text-align: center; max-width: 500px; margin: 0 auto 2.5rem auto;">
                     <div style="font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 16pt; font-weight: bold; letter-spacing: 1px; line-height: 1.3;">
                         CONTRAT DE TRAVAIL<br>A DUREE INDETERMINEE
                     </div>
@@ -674,7 +674,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             const endDateFormatted = formatDateFR(addMonths(data.hireDate, 3));
             const template = `
-                <div class="contract-title-container" style="border: 3px double #000; padding: 1.5rem; text-align: center; max-width: 500px; margin: 0 auto 2.5rem auto;">
+                <div class="contract-title-container" style="padding: 1.5rem; text-align: center; max-width: 500px; margin: 0 auto 2.5rem auto;">
                     <div style="font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 16pt; font-weight: bold; letter-spacing: 1px; line-height: 1.3;">
                         CONTRAT DE TRAVAIL<br>A DUREE DETERMINEE
                     </div>
