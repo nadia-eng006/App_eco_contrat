@@ -200,6 +200,38 @@ document.addEventListener('DOMContentLoaded', () => {
             .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
     }
 
+    if (contractsListContainer) {
+        contractsListContainer.addEventListener('click', (e) => {
+            const item = e.target.closest('.contract-list-item');
+            if (!item) return;
+
+            const index = item.getAttribute('data-index');
+            const contracts = getAllContractsForList();
+            const selectedContract = contracts[index];
+
+            if (selectedContract) {
+            // Reconstituer les données nécessaires pour leaper dans la prévisualisation
+                state.formData = {
+                    lastname: selectedContract.lastname || '',
+                    firstname: selectedContract.firstname || '',
+                    gender: selectedContract.gender || 'homme',
+                    birthdate: selectedContract.birthdate || '',
+                    cin: selectedContract.cin || 'N/A',
+                    address: selectedContract.address || 'N/A',
+                    contractType: selectedContract.contractType || 'cdi',
+                    hireDate: selectedContract.hireDate || '',
+                    expirationDate: selectedContract.expirationDate || null,
+                    position: selectedContract.position || 'Collaborateur',
+                    salary: selectedContract.salary || 'Non Spécifié'
+                };
+
+            // Générer le HTML du contrat et basculer sur la vue preview
+                generateContractHTML(state.formData);
+                showView('preview');
+            }
+        });
+    }
+
     function renderContractsList() {
         if (!contractsListCount || !contractsListContainer) return;
 
@@ -211,15 +243,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        contractsListContainer.innerHTML = contracts.map((contract) => {
+        contractsListContainer.innerHTML = contracts.map((contract, index) => {
             const lastname = (contract.lastname || '').toUpperCase();
             const firstname = contract.firstname || '';
             const type = (contract.contractType || '-').toUpperCase();
             const hireDate = contract.hireDate ? formatDateFR(contract.hireDate) : '-';
-            const expiration = contract.expirationDate ? formatDateFR(contract.expirationDate) : 'Duree indeterminee';
+            const expiration = contract.expirationDate ? formatDateFR(contract.expirationDate) : 'Durée indéterminée';
 
             return `
-                <div class="contract-list-item">
+                <div class="contract-list-item" data-index="${index}" style="cursor: pointer;">
                     <div class="contract-list-main">
                         <strong>${lastname || '-'}</strong>
                         <span>${firstname || '-'}</span>
@@ -227,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="contract-list-meta">
                         <span class="contract-type-pill">${type}</span>
                         <span><i class="fa-regular fa-calendar"></i> Embauche : ${hireDate}</span>
-                        <span><i class="fa-solid fa-calendar-check"></i> Echeance : ${expiration}</span>
+                        <span><i class="fa-solid fa-calendar-check"></i> Échéance : ${expiration}</span>
                     </div>
                 </div>
             `;
@@ -553,7 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (data.contractType === 'cdi') {
             const template = `
-                <div class="contract-title-container" style="padding: 1.5rem; text-align: center; max-width: 500px; margin: 0 auto 2.5rem auto;">
+                <div class="contract-title-container" style="padding: 0.5rem; text-align: center; margin: 0 auto 1rem auto;">
                     <div style="font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 16pt; font-weight: bold; letter-spacing: 1px; line-height: 1.3;">
                         CONTRAT DE TRAVAIL<br>A DUREE INDETERMINEE
                     </div>
@@ -615,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- ARTICLE 7 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE SEPTIEME : Absences</h4>
-                    <p>En cas d'empêchement à remplir ses fonctions, quelle qu'en soit la cause, ${fullName} s'engage à informer la direction et à justifier de son absence dans les 24 heures, sauf circonstances exceptionnelles.</p>
+                    <p>En cas d'empêchement à remplir ses fonctions, quelle qu'en soit la cause, ${fullName} s'engage à informer la direction et à justifier de son absence dans les 48 heures, sauf circonstances exceptionnelles.</p>
                 </div>
 
                 <!-- ARTICLE 8 -->
@@ -674,7 +706,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             const endDateFormatted = formatDateFR(addMonths(data.hireDate, 3));
             const template = `
-                <div class="contract-title-container" style="padding: 1.5rem; text-align: center; max-width: 500px; margin: 0 auto 2.5rem auto;">
+                <div class="contract-title-container" style="padding: 0.5rem; text-align: center; margin: 0 auto 1rem auto;">
                     <div style="font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 16pt; font-weight: bold; letter-spacing: 1px; line-height: 1.3;">
                         CONTRAT DE TRAVAIL<br>A DUREE DETERMINEE
                     </div>
@@ -754,7 +786,21 @@ document.addEventListener('DOMContentLoaded', () => {
             contractPaperContent.innerHTML = template;
         }
     }
+    // Récupérer le bouton (vous pouvez aussi l'ajouter en haut de app.js dans les DOM elements cache)
+    const newContractBtn = document.getElementById('new-contract-btn');
 
+    if (newContractBtn) {
+        newContractBtn.addEventListener('click', () => {
+        // Réinitialiser le formulaire de contrat
+            contractForm.reset();
+            cdiFieldsContainer.classList.remove('expanded');
+            employeePosition.removeAttribute('required');
+            employeeSalary.removeAttribute('required');
+        
+        // Basculer vers la vue du formulaire
+            showView('form');
+        });
+    }
     // 5. Back and Download actions
     backToFormBtn.addEventListener('click', () => {
         showView('form');
@@ -769,11 +815,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Styling adjustment specifically for pdf generation to prevent shadows/borders
         const opt = {
-            margin:       [15, 15, 15, 15], // mm margins
+            margin:       [10, 10, 10, 10], // Réduction des marges en mm
             filename:     filename,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2.5, useCORS: true, letterRendering: true },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait', putOnlyUsedFonts: true }
         };
 
         // Disable download button temporarily to prevent double click

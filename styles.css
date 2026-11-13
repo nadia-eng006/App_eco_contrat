@@ -1219,8 +1219,9 @@ select {
     width: 100%;
     display: flex;
     justify-content: center;
+    align-items: flex-start; /* MODIFICATION : Aligne le papier tout en haut */
     background: rgba(0, 0, 0, 0.15);
-    padding: 2.5rem;
+    padding: 2rem;
     border-radius: 20px;
     box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
 }
@@ -1235,8 +1236,10 @@ select {
     color: var(--paper-text);
     width: 100%;
     max-width: 794px; 
-    min-height: 1123px; /* A4 Ratio Height */
-    padding: 4.5rem 3.5rem;
+    min-height: auto; /* Supprime la hauteur forcée A4 sur l'écran */
+    height: auto;
+    margin-top: 0; /* S'assure qu'il n'y a pas de marge haute */
+    padding: 2.5rem 3.5rem; /* Marges internes équilibrées */
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--paper-border);
     border-radius: 4px;
@@ -1290,6 +1293,17 @@ select {
     gap: 3rem;
     margin-top: 4.5rem;
     page-break-inside: avoid;
+}
+
+.contract-list-item {
+    cursor: pointer; /* Indique que l'élément est cliquable */
+    transition: transform var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.contract-list-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-color);
+    background: rgba(26, 176, 78, 0.05); /* Légère lueur verte au survol */
 }
 
 .signature-box {
@@ -1446,20 +1460,18 @@ select {
     .contract-paper {
         border: none !important;
         box-shadow: none !important;
-        padding: 18mm 18mm 18mm 18mm !important;
+        padding: 10mm 15mm !important; /* Marges d'impression propres */
         margin: 0 !important;
         width: 210mm !important;
-        min-height: 297mm !important;
+        min-height: auto !important; /* CORRECTION : Empêche le bloc vide d'occuper toute la page par force */
+        height: auto !important;
         max-width: 210mm !important;
         background: white !important;
         border-radius: 0 !important;
-        font-family: 'Merriweather', 'Georgia', serif !important;
-        font-size: 11pt !important;
-        line-height: 1.6 !important;
-        text-align: justify;
-        letter-spacing: -0.01em;
+        font-family: 'Georgia', serif !important;
+        font-size: 10.5pt !important;
+        line-height: 1.5 !important;
     }
-
     /* Remove decorative UI elements */
     .bg-glow, .app-header, .sidebar-card, .notification-dropdown, .toast, .no-print, .hide-on-print {
         display: none !important;
