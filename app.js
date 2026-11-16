@@ -744,7 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <!-- ARTICLE 4 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
                     <h4 style="text-decoration: underline; font-style: italic; font-weight: bold; font-size: 11pt; margin-bottom: 0.3rem; text-transform: uppercase;">ARTICLE QUATRIEME : Absences</h4>
-                    <p>En cas d'empêchement à remplir ses fonctions, quelle qu'en soit la cause <strong>${fullName}</strong> s'engage à informer son responsable hiérarchique et à justifier de son absence dans les 24 heures, sauf circonstances exceptionnelles.</p>
+                    <p>En cas d'empêchement à remplir ses fonctions, quelle qu'en soit la cause <strong>${fullName}</strong> s'engage à informer son responsable hiérarchique et à justifier de son absence dans les 48 heures, sauf circonstances exceptionnelles.</p>
                 </div>
                 <!-- ARTICLE 5 -->
                 <div class="contract-article" style="font-family: 'Times New Roman', Times, serif; font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 1.2rem;">
@@ -803,9 +803,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // 5. Back and Download actions
     backToFormBtn.addEventListener('click', () => {
+        if (state.formData) {
+            document.getElementById('employee-lastname').value = state.formData.lastname || '';
+            document.getElementById('employee-firstname').value = state.formData.firstname || '';
+            
+            // Sélectionner le bon radio pour le genre
+            const genderRadio = document.querySelector(`input[name="employee-gender"][value="${state.formData.gender}"]`);
+            if (genderRadio) genderRadio.checked = true;
+
+            document.getElementById('employee-birthdate').value = state.formData.birthdate || '';
+            document.getElementById('employee-cin').value = state.formData.cin || '';
+            document.getElementById('employee-address').value = state.formData.address || '';
+            
+            // Type de contrat et affichage conditionnel des champs CDI
+            contractTypeSelect.value = state.formData.contractType || '';
+            
+            if (state.formData.contractType === 'cdi') {
+                cdiFieldsContainer.classList.add('expanded');
+                employeePosition.setAttribute('required', 'required');
+                employeeSalary.setAttribute('required', 'required');
+                employeePosition.value = state.formData.position || '';
+                
+                // Nettoyer le formatage du salaire si nécessaire
+                let rawSalary = state.formData.salary;
+                if (rawSalary && typeof rawSalary === 'string') {
+                    rawSalary = rawSalary.replace(/\s/g, '').replace(',', '.');
+                }
+                employeeSalary.value = rawSalary || '';
+            } else {
+                cdiFieldsContainer.classList.remove('expanded');
+                employeePosition.removeAttribute('required');
+                employeeSalary.removeAttribute('required');
+                employeePosition.value = '';
+                employeeSalary.value = '';
+            }
+
+            hireDateInput.value = state.formData.hireDate || '';
+        }
         showView('form');
     });
-
     downloadPdfBtn.addEventListener('click', () => {
         const element = contractPaperContent;
         const typeLabel = state.formData.contractType.toUpperCase();
